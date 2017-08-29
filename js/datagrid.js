@@ -116,12 +116,13 @@
         // Set table head fixed
         function fixHead() {
             var thead = $(settings.table).find("thead");
-            var tr = thead.find("tr");
-            var cells = thead.find("tr > *");
-
-            setBackground(cells);
-            cells.css({
-                'position': 'relative'
+            
+            thead.find("tr").each(function(k, row){
+                var cells = $(row).find('th');
+                setBackground(cells);
+                cells.css({
+                    'position': 'relative'
+                });
             });
         }
 
