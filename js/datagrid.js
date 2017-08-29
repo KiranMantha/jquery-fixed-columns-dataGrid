@@ -142,10 +142,11 @@
 
             var tr = table.find("tr");
             tr.each(function (k, row) {
-
-                solverLeftColspan(row, function (cell) {
-                    settings.leftColumns = settings.leftColumns.add(cell);
-                });
+                if($(row).children().length > 0) {
+                    solverLeftColspan(row, function (cell) {
+                        settings.leftColumns = settings.leftColumns.add(cell);
+                    });
+                }
             });
 
             var column = settings.leftColumns;
@@ -178,9 +179,11 @@
 
             var tr = table.find("tr");
             tr.each(function (k, row) {
-                solveRightColspan(row, function (cell) {
-                    settings.rightColumns = settings.rightColumns.add(cell);
-                });
+                if($(row).children().length > 0) {
+                    solveRightColspan(row, function (cell) {
+                        settings.rightColumns = settings.rightColumns.add(cell);
+                    });
+                }
             });
 
             var column = settings.rightColumns;
