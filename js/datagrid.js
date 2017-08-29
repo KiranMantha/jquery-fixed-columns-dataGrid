@@ -41,6 +41,7 @@
             $(settings.parent).trigger("scroll");
             $(window).resize(function () {
                 $(settings.parent).trigger("scroll");
+                setParent();
             });            
         }
 
@@ -116,7 +117,7 @@
         // Set table head fixed
         function fixHead() {
             var thead = $(settings.table).find("thead");
-            
+
             thead.find("tr").each(function(k, row){
                 var cells = $(row).find('th');
                 setBackground(cells);
