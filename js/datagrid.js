@@ -56,9 +56,11 @@
                     var tr = table.find("thead tr");
 
                     tr.each(function (k, row) {
-                        solverLeftColspan(row, function (cell) {
-                            $(cell).css("z-index", settings['z-index'] + 1);
-                        });
+                        if($(row).children().length > 0) {
+                            solverLeftColspan(row, function (cell) {
+                                $(cell).css("z-index", settings['z-index'] + 1);
+                            });    
+                        }
                     });
                 }
 
@@ -66,9 +68,11 @@
                     var tr = table.find("thead tr");
 
                     tr.each(function (k, row) {
-                        solveRightColspan(row, function (cell) {
-                            $(cell).css("z-index", settings['z-index'] + 1);
-                        });
+                        if($(row).children().length > 0) {
+                            solveRightColspan(row, function (cell) {
+                                $(cell).css("z-index", settings['z-index'] + 1);
+                            });
+                        }
                     });
                 }
             }
