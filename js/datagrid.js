@@ -19,30 +19,32 @@
             right: 0,
             containerId: '',
             containerHeight: '50vh',
+            containerWidth: '100vw',
             'z-index': 0
         };
         var settings = $.extend({}, defaults, params);
         settings.table = this;
-        settings.parent = $('#'+ settings.containerId);
+        settings.parent = $('#' + settings.containerId);
+        settings.leftColumns = $();
+        settings.rightColumns = $();
+        settings.Headers = $();
 
         // bind dataGrid to target table
         function table() {
             setParent();
+            setCorner();
 
             if (settings.left > 0)
                 fixLeft();
             if (settings.right > 0)
                 fixRight();
-            if (settings.head)
-                fixHead();
+                
 
-            setCorner();
             
             $(settings.parent).trigger("scroll");
             $(window).resize(function () {
                 $(settings.parent).trigger("scroll");
-                setParent();
-            });            
+            });
         }
 
         /*
@@ -54,28 +56,31 @@
 
             if (settings.head) {
                 if (settings.left > 0) {
-                    var tr = table.find("thead tr");
+                    var tr = table.find("thead tr:first-child");
 
                     tr.each(function (k, row) {
-                        if($(row).children().length > 0) {
+                        if ($(row).children().length > 0) {
                             solverLeftColspan(row, function (cell) {
-                                $(cell).css("z-index", settings['z-index'] + 1);
-                            });    
+                                settings.leftColumns = settings.leftColumns.add(cell);
+                            });                            
                         }
                     });
                 }
 
                 if (settings.right > 0) {
-                    var tr = table.find("thead tr");
+                    var tr = table.find("thead tr:first-child");
 
                     tr.each(function (k, row) {
-                        if($(row).children().length > 0) {
+                        if ($(row).children().length > 0) {
                             solveRightColspan(row, function (cell) {
-                                $(cell).css("z-index", settings['z-index'] + 1);
+                                settings.rightColumns = settings.rightColumns.add(cell);
                             });
                         }
                     });
                 }
+
+                if (settings.head)
+                    fixHead();
             }
         }
 
@@ -87,9 +92,9 @@
                 .css({
                     'overflow-x': 'auto',
                     'overflow-y': 'auto',
-                    'width': parent[0].clientWidth + 'px',
                     //'max-height': settings.containerHeight,
-                    'height': settings.containerHeight
+                    'height': settings.containerHeight,
+                    'width': settings.containerWidth
                 });
 
             parent.scroll(function () {
@@ -118,33 +123,34 @@
         function fixHead() {
             var thead = $(settings.table).find("thead");
 
-            thead.find("tr").each(function(k, row){
+            thead.find("tr").each(function (k, row) {
                 var cells = $(row).find('th');
                 setBackground(cells);
                 cells.css({
-                    'position': 'relative'
+                    'position': 'relative',
+                    'z-index': settings['z-index'] + 2
                 });
+            });
+            $(settings.table).css({
+                'border-collapse': 'separate',
+                'border-spacing': '0'                
             });
         }
 
         //clear thead cells styles
         function clearHead() {
-            $(settings.table).find("thead tr > *").each(function(k, cell){
+            $(settings.table).find("thead tr > *").each(function (k, cell) {
                 $(cell).removeAttr('style');
-            })
+            });
+            $(settings.table).css({ 'border-spacing': '', 'border-collapse': '' });
         }
 
         // Set table left column fixed
         function fixLeft() {
-            var table = $(settings.table);
+            var tbody = $(settings.table).find('tbody');           
 
-            // var fixColumn = settings.left;
-
-            settings.leftColumns = $();
-
-            var tr = table.find("tr");
-            tr.each(function (k, row) {
-                if($(row).children().length > 0) {
+            tbody.find("tr").each(function (k, row) {
+                if ($(row).children().length > 0) {
                     solverLeftColspan(row, function (cell) {
                         settings.leftColumns = settings.leftColumns.add(cell);
                     });
@@ -155,17 +161,24 @@
 
             column.each(function (k, cell) {
                 var cell = $(cell);
-
                 setBackground(cell);
-                cell.css({
-                    'position': 'relative'
-                });
+                if (cell[0].nodeName === "TH") {
+                    cell.css({
+                        'position': 'relative',
+                        'z-index': settings['z-index'] + 3
+                    });
+                } else {
+                    cell.css({
+                        'position': 'relative',
+                        'z-index': settings['z-index'] - 1
+                    });
+                }
             });
         }
 
         // clear all styles on left fixed cells
         function clearLeft() {
-            settings.leftColumns.each(function(k, cell){
+            settings.leftColumns.each(function (k, cell) {
                 $(cell).removeAttr('style');
             });
             settings.leftColumns = $();
@@ -173,15 +186,10 @@
 
         // Set table right column fixed
         function fixRight() {
-            var table = $(settings.table);
+            var tbody = $(settings.table).find('tbody');            
 
-            var fixColumn = settings.right;
-
-            settings.rightColumns = $();
-
-            var tr = table.find("tr");
-            tr.each(function (k, row) {
-                if($(row).children().length > 0) {
+            tbody.find('tr').each(function (k, row) {
+                if ($(row).children().length > 0) {
                     solveRightColspan(row, function (cell) {
                         settings.rightColumns = settings.rightColumns.add(cell);
                     });
@@ -192,18 +200,26 @@
 
             column.each(function (k, cell) {
                 var cell = $(cell);
-
                 setBackground(cell);
-                cell.css({
-                    'position': 'relative'
-                });
+                if (cell[0].nodeName === "TH") {
+                    cell.css({
+                        'position': 'relative',
+                        'z-index': settings['z-index'] + 3
+                    });
+                } else {
+                    cell.css({
+                        'position': 'relative',
+                        'z-index': settings['z-index'] - 1
+                    });
+                }
+                
             });
 
         }
 
         // clear all styles on right fixed cells
         function clearRight() {
-            settings.rightColumns.each(function(k, cell){
+            settings.rightColumns.each(function (k, cell) {
                 $(cell).removeAttr('style');
             });
             settings.rightColumns = $();
@@ -221,7 +237,7 @@
                 var parentBackground = parent.css("background-color");
                 parentBackground = (parentBackground == "transparent" || parentBackground == "rgba(0, 0, 0, 0)") ? null : parentBackground;
 
-                var background = parentBackground ? parentBackground : "white";
+                var background = parentBackground ? parentBackground : "#fff";
                 background = elementBackground ? elementBackground : background;
 
                 element.css("background-color", background);
@@ -241,33 +257,42 @@
                 if (cell.cellPos().left < fixColumn) {
                     action(cell);
                 }
+                inc = colspan;
+            }
+        }
 
+        function solveRightColspan(row, action) {
+            var fixColumn = settings.right;
+            var inc = 1;
+
+            for (var i = 1; i <= fixColumn; i = i + inc) {
+                var nth = inc > 1 ? i - 1 : i;
+
+                var cell = $(row).find("> *:nth-last-child(" + nth + ")");
+                var colspan = cell.prop("colspan");
+                action(cell);
                 inc = colspan;
             }
         }
 
         //rebind the modified table with dataGrid
-        $.fn.dataGrid.refresh = function() {
-            setParent();
-            if(settings.left > 0) {
-                clearLeft();
-                fixLeft();
-            }
+        $.fn.dataGrid.refresh = function () {
+            clearHead();
+            clearLeft();
+            clearRight();
 
-            if(settings.right > 0) {
-                clearRight();
-                fixRight();
-            }                
+
+            table.call(settings.table);
         }
 
         // destroy dataGrid
-        $.fn.dataGrid.destroy = function() {
+        $.fn.dataGrid.destroy = function () {
             $(settings.parent).removeAttr('style');
-            if(settings.head)
+            if (settings.head)
                 clearHead();
-            if(settings.left > 0)
+            if (settings.left > 0)
                 clearLeft();
-            if(settings.right > 0)
+            if (settings.right > 0)
                 clearRight();
         }
 
