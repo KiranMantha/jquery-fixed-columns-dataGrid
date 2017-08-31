@@ -1,4 +1,6 @@
 /*
+    The repo can be found at https://github.com/KiranMantha/jquery-fixed-columns-dataGrid
+
     example:
     $('#example').dataGrid({
         left: 2,
@@ -240,7 +242,7 @@
                 var background = parentBackground ? parentBackground : "#fff";
                 background = elementBackground ? elementBackground : background;
 
-                element.css("background-color", background);
+                element.css("background-color", 'inherit');
             });
         }
 
