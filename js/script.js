@@ -3,7 +3,7 @@ $(document).ready(function(){
         left: 2,
         containerId: 'tblContainer',
         'z-index': 4,
-        containerHeight: '620px',
+        containerHeight: '500px',
         containerWidth: '500px'
     });
     //$('#example').dataGrid.destroy();
