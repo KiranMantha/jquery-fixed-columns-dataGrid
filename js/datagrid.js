@@ -241,8 +241,10 @@
 
                 var background = parentBackground ? parentBackground : "#fff";
                 background = elementBackground ? elementBackground : background;
-
-                element.css("background-color", 'inherit');
+                if (element.nodeName === 'TH')
+                    element.css("background-color", '#fff');
+                else
+                    element.css("background-color", background);
             });
         }
 
