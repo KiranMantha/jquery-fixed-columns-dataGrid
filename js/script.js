@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $('#example').dataGrid({
         left: 2,
-        containerId: 'tblContainer'
+        containerId: 'tblContainer',
         'z-index': 4,
         containerHeight: '620px',
         containerWidth: '500px'
