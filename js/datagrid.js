@@ -39,10 +39,10 @@
     DataGrid.prototype = {
         constructor: DataGrid,
         _settings: {},
-        _setParent: function(parent) {
+        _setParent: function() {
             // Set style of table parent
             var _this = this;
-            parent
+            this._settings.parent
                 .css({
                     'overflow-x': 'auto',
                     'overflow-y': 'auto',
@@ -51,13 +51,13 @@
                     'width': this._settings.containerWidth
                 });
 
-            parent.scroll(function (e) {
+            this._settings.parent.scroll(function (e) {
                 var scrollWidth = parent[0].scrollWidth;
                 var clientWidth = parent[0].clientWidth;
                 var scrollHeight = parent[0].scrollHeight;
                 var clientHeight = parent[0].clientHeight;
-                var top = parent.scrollTop();
-                var left = parent.scrollLeft();
+                var top = _this._settings.parent.scrollTop();
+                var left = _this._settings.parent.scrollLeft();
 
                 if (_this._settings.head)
                     $(e.currentTarget).find("thead tr > *").css("top", top);
@@ -265,7 +265,7 @@
         },
         _setup: function() {   
             var _this = this;         
-            this._setParent(this._settings.parent);
+            this._setParent();
             this._setCorner(this._settings.table);
     
             if (this._settings.left > 0)
