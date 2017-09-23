@@ -9,97 +9,49 @@
         containerId: id-attribute-of-the-target-table-parent,
         containerHeight: in-px || in-vh || in-percentage
     });
-    $('#example').dataGrid.destroy();
-    $('#example').dataGrid.refresh();
+    $('#example').dataGrid('destroy');
+    $('#example').dataGrid('refresh');
 */
 (function ($) {
-    $.fn.dataGrid = function (params) {
-        var defaults = {
-            head: true,
-            foot: false,
-            left: 0,
-            right: 0,
-            containerId: '',
-            containerHeight: '50vh',
-            containerWidth: '100vw',
-            'z-index': 0
-        };
+
+    var defaults = {
+        head: true,
+        foot: false,
+        left: 0,
+        right: 0,
+        containerId: '',
+        containerHeight: '50vh',
+        containerWidth: '100vw',
+        'z-index': 4
+    };
+
+    var DataGrid = function(element, params) {
         var settings = $.extend({}, defaults, params);
-        settings.table = this;
+        settings.table = element;
         settings.parent = $('#' + settings.containerId);
         settings.leftColumns = $();
         settings.rightColumns = $();
         settings.Headers = $();
+        this._settings = settings;
+        this._setup();
+    }
 
-        // bind dataGrid to target table
-        function table() {
-            setParent();
-            setCorner();
-
-            if (settings.left > 0)
-                fixLeft();
-            if (settings.right > 0)
-                fixRight();
-                
-
-            
-            $(settings.parent).trigger("scroll");
-            $(window).resize(function () {
-                $(settings.parent).trigger("scroll");
-            });
-        }
-
-        /*
-            This function solver z-index problem in corner cell where fix row and column at the same time,
-            set corner cells z-index 1 more then other fixed cells
-        */
-        function setCorner() {
-            var table = $(settings.table);
-
-            if (settings.head) {
-                if (settings.left > 0) {
-                    var tr = table.find("thead tr:first-child");
-
-                    tr.each(function (k, row) {
-                        if ($(row).children().length > 0) {
-                            solverLeftColspan(row, function (cell) {
-                                settings.leftColumns = settings.leftColumns.add(cell);
-                            });                            
-                        }
-                    });
-                }
-
-                if (settings.right > 0) {
-                    var tr = table.find("thead tr:first-child");
-
-                    tr.each(function (k, row) {
-                        if ($(row).children().length > 0) {
-                            solveRightColspan(row, function (cell) {
-                                settings.rightColumns = settings.rightColumns.add(cell);
-                            });
-                        }
-                    });
-                }
-
-                if (settings.head)
-                    fixHead();
-            }
-        }
-
-        // Set style of table parent
-        function setParent() {
-            var parent = $(settings.parent);
-
+    DataGrid.prototype = {
+        constructor: DataGrid,
+        _settings: {},
+        _setParent: function(parent) {
+            // Set style of table parent
+            var _this = this;
             parent
                 .css({
                     'overflow-x': 'auto',
                     'overflow-y': 'auto',
                     //'max-height': settings.containerHeight,
-                    'height': settings.containerHeight,
-                    'width': settings.containerWidth
+                    'height': this._settings.containerHeight,
+                    'width': this._settings.containerWidth
                 });
 
-            parent.scroll(function () {
+            parent.scroll(function (e) {
                 var scrollWidth = parent[0].scrollWidth;
                 var clientWidth = parent[0].clientWidth;
                 var scrollHeight = parent[0].scrollHeight;
@@ -107,128 +59,163 @@
                 var top = parent.scrollTop();
                 var left = parent.scrollLeft();
 
-                if (settings.head)
-                    this.find("thead tr > *").css("top", top);
+                if (_this._settings.head)
+                    $(e.currentTarget).find("thead tr > *").css("top", top);
 
-                if (settings.foot)
-                    this.find("tfoot tr > *").css("bottom", scrollHeight - clientHeight - top);
+                if (_this._settings.foot)
+                    $(e.currentTarget).find("tfoot tr > *").css("bottom", scrollHeight - clientHeight - top);
 
-                if (settings.left > 0)
-                    settings.leftColumns.css("left", left);
+                if (_this._settings.left > 0)
+                    _this._settings.leftColumns.css("left", left);
 
-                if (settings.right > 0)
-                    settings.rightColumns.css("right", scrollWidth - clientWidth - left);
-            }.bind(settings.table));
-        }
+                if (_this._settings.right > 0)
+                    _this._settings.rightColumns.css("right", scrollWidth - clientWidth - left);
+            }.bind(this._settings.table));
+        },
+        _setCorner: function(table) {
+            /*
+                This function solver z-index problem in corner cell where fix row and column at the same time,
+                set corner cells z-index 1 more then other fixed cells
+            */
+            
+            var _this = this;
+            
+            if (this._settings.head) {
+                if (this._settings.left > 0) {
+                    var tr = $(table).find("thead tr:first-child");
 
-        // Set table head fixed
-        function fixHead() {
-            var thead = $(settings.table).find("thead");
+                    tr.each(function (k, row) {
+                        if ($(row).children().length > 0) {
+                            _this._solverLeftColspan(row, function (cell) {
+                                _this._settings.leftColumns = _this._settings.leftColumns.add(cell);
+                            });                            
+                        }
+                    });
+                }
 
+                if (this._settings.right > 0) {
+                    var tr = $(table).find("thead tr:first-child");
+
+                    tr.each(function (k, row) {
+                        if ($(row).children().length > 0) {
+                            _this._solveRightColspan(row, function (cell) {
+                                _this._settings.rightColumns = _this._settings.rightColumns.add(cell);
+                            });
+                        }
+                    });
+                }
+
+                if (this._settings.head)
+                    this._fixHead();
+            }
+        },
+        _fixHead: function() {
+            // Set table head fixed
+            var _this = this;
+            var thead = $(this._settings.table).find("thead");
+            
             thead.find("tr").each(function (k, row) {
                 var cells = $(row).find('th');
-                setBackground(cells);
+                _this._setBackground(cells);
                 cells.css({
                     'position': 'relative',
-                    'z-index': settings['z-index'] + 2
+                    'z-index': _this._settings['z-index'] + 2
                 });
             });
-            $(settings.table).css({
+            $(this._settings.table).css({
                 'border-collapse': 'separate',
                 'border-spacing': '0'                
             });
-        }
+        },
+        _fixLeft: function() {
+            // Set table left column fixed
 
-        //clear thead cells styles
-        function clearHead() {
-            $(settings.table).find("thead tr > *").each(function (k, cell) {
-                $(cell).removeAttr('style');
-            });
-            $(settings.table).css({ 'border-spacing': '', 'border-collapse': '' });
-        }
-
-        // Set table left column fixed
-        function fixLeft() {
-            var tbody = $(settings.table).find('tbody');           
-
+            var tbody = $(this._settings.table).find('tbody'),
+                _this = this;
+            
             tbody.find("tr").each(function (k, row) {
                 if ($(row).children().length > 0) {
-                    solverLeftColspan(row, function (cell) {
-                        settings.leftColumns = settings.leftColumns.add(cell);
+                    _this._solverLeftColspan(row, function (cell) {
+                        _this._settings.leftColumns = _this._settings.leftColumns.add(cell);
                     });
                 }
             });
 
-            var column = settings.leftColumns;
+            var column = this._settings.leftColumns;
 
             column.each(function (k, cell) {
                 var cell = $(cell);
-                setBackground(cell);
+                _this._setBackground(cell);
                 if (cell[0].nodeName === "TH") {
                     cell.css({
                         'position': 'relative',
-                        'z-index': settings['z-index'] + 3
+                        'z-index': _this._settings['z-index'] + 3
                     });
                 } else {
                     cell.css({
                         'position': 'relative',
-                        'z-index': settings['z-index'] - 1
+                        'z-index': _this._settings['z-index'] - 1
                     });
                 }
             });
-        }
+        },
+        _clearHead: function() {
+            //clear thead cells styles
 
-        // clear all styles on left fixed cells
-        function clearLeft() {
-            settings.leftColumns.each(function (k, cell) {
+            $(this._settings.table).find("thead tr > *").each(function (k, cell) {
                 $(cell).removeAttr('style');
             });
-            settings.leftColumns = $();
-        }
+            $(this._settings.table).css({ 'border-spacing': '', 'border-collapse': '' });
+        },
+        _clearLeft: function() {
+            // clear all styles on left fixed cells
+            
+            this._settings.leftColumns.each(function (k, cell) {
+                $(cell).removeAttr('style');
+            });
+            this._settings.leftColumns = $();
+        },        
+        _fixRight: function() {
+            // Set table right column fixed
 
-        // Set table right column fixed
-        function fixRight() {
-            var tbody = $(settings.table).find('tbody');            
+            var tbody = $(this._settings.table).find('tbody'),
+                _this = this;
 
             tbody.find('tr').each(function (k, row) {
                 if ($(row).children().length > 0) {
-                    solveRightColspan(row, function (cell) {
-                        settings.rightColumns = settings.rightColumns.add(cell);
+                    _this._solveRightColspan(row, function (cell) {
+                        _this._settings.rightColumns = _this._settings.rightColumns.add(cell);
                     });
                 }
             });
 
-            var column = settings.rightColumns;
+            var column = this._settings.rightColumns;
 
             column.each(function (k, cell) {
                 var cell = $(cell);
-                setBackground(cell);
+                _this._setBackground(cell);
                 if (cell[0].nodeName === "TH") {
                     cell.css({
                         'position': 'relative',
-                        'z-index': settings['z-index'] + 3
+                        'z-index': _this._settings['z-index'] + 3
                     });
                 } else {
                     cell.css({
                         'position': 'relative',
-                        'z-index': settings['z-index'] - 1
+                        'z-index': _this._settings['z-index'] - 1
                     });
-                }
-                
+                }                
             });
-
-        }
-
-        // clear all styles on right fixed cells
-        function clearRight() {
-            settings.rightColumns.each(function (k, cell) {
+        },
+        _clearRight: function() {
+            // clear all styles on right fixed cells
+            this._settings.rightColumns.each(function (k, cell) {
                 $(cell).removeAttr('style');
             });
-            settings.rightColumns = $();
-        }
-
-        // Set fixed cells backgrounds
-        function setBackground(elements) {
+            this._settings.rightColumns = $();
+        },
+        _setBackground: function(elements) {
+            // Set fixed cells backgrounds
             elements.each(function (k, element) {
                 var element = $(element);
                 var parent = $(element).parent();
@@ -246,10 +233,9 @@
                 else
                     element.css("background-color", background);
             });
-        }
-
-        function solverLeftColspan(row, action) {
-            var fixColumn = settings.left;
+        },
+        _solverLeftColspan: function(row, action) {
+            var fixColumn = this._settings.left;
             var inc = 1;
 
             for (var i = 1; i <= fixColumn; i = i + inc) {
@@ -263,10 +249,9 @@
                 }
                 inc = colspan;
             }
-        }
-
-        function solveRightColspan(row, action) {
-            var fixColumn = settings.right;
+        },
+        _solveRightColspan: function(row, action) {
+            var fixColumn = this._settings.right;
             var inc = 1;
 
             for (var i = 1; i <= fixColumn; i = i + inc) {
@@ -277,33 +262,71 @@
                 action(cell);
                 inc = colspan;
             }
-        }
-
-        //rebind the modified table with dataGrid
-        $.fn.dataGrid.refresh = function () {
-            clearHead();
-            clearLeft();
-            clearRight();
-
-
-            table.call(settings.table);
-        }
-
+        },
+        _setup: function() {   
+            var _this = this;         
+            this._setParent(this._settings.parent);
+            this._setCorner(this._settings.table);
+    
+            if (this._settings.left > 0)
+                this._fixLeft();
+            if (this._settings.right > 0)
+                this._fixRight();
+            
+            $(this._settings.parent).trigger("scroll");
+            $(window).resize(function () {
+                $(_this._settings.parent).trigger("scroll");
+            });
+        },
+        refresh: function () {
+            //rebind the modified table with dataGrid
+            this._clearLeft();
+            this._clearRight();
+            this._clearHead();
+            this._setup();
+        },
         // destroy dataGrid
-        $.fn.dataGrid.destroy = function () {
-            $(settings.parent).removeAttr('style');
-            if (settings.head)
-                clearHead();
-            if (settings.left > 0)
-                clearLeft();
-            if (settings.right > 0)
-                clearRight();
+        destroy: function () {
+            $(this._settings.parent).removeAttr('style');
+            if (this._settings.head)
+                this._clearHead();
+            if (this._settings.left > 0)
+                this._clearLeft();
+            if (this._settings.right > 0)
+                this._clearRight();
         }
+    }
 
-        return this.each(function () {
-            table.call(this);
+    var dataGridPlugin = function (params) {
+        var args = Array.apply(null, arguments),
+            internal_return;
+		args.shift();
+        this.each(function () {
+            var data = $(this).data('dataGrid');
+            if(!data) {
+                var opts = typeof params === 'object' && params;
+                data = new DataGrid(this, opts);
+                $(this).data('dataGrid', data);
+            }
+
+            if (typeof params === 'string' && typeof data[params] === 'function'){
+				internal_return = data[params].apply(data, args);
+            }
+            
+            if (
+                internal_return === undefined ||
+                internal_return instanceof DataGrid
+            ) {
+                return this;
+            } else {
+                return internal_return;
+            }
         });
     }
+
+    $.fn.dataGrid = dataGridPlugin;
+
+    $.fn.dataGrid.Constructor = DataGrid;
 })(jQuery);
 
 /*  cellPos jQuery plugin
