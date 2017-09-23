@@ -284,9 +284,9 @@
             this._clearRight();
             this._clearHead();
             this._setup();
-        },
-        // destroy dataGrid
+        },        
         destroy: function () {
+            // destroy dataGrid
             $(this._settings.parent).removeAttr('style');
             if (this._settings.head)
                 this._clearHead();
