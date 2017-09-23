@@ -294,6 +294,8 @@
                 this._clearLeft();
             if (this._settings.right > 0)
                 this._clearRight();
+
+            $.removeData(this._settings.table, 'dataGrid');
         }
     }
 
