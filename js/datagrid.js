@@ -86,7 +86,7 @@
 
                     tr.each(function (k, row) {
                         if ($(row).children().length > 0) {
-                            _this._solverLeftColspan(row, function (cell) {
+                            _this._solveLeftColspan(row, function (cell) {
                                 _this._settings.leftColumns = _this._settings.leftColumns.add(cell);
                             });                            
                         }
@@ -135,7 +135,7 @@
             
             tbody.find("tr").each(function (k, row) {
                 if ($(row).children().length > 0) {
-                    _this._solverLeftColspan(row, function (cell) {
+                    _this._solveLeftColspan(row, function (cell) {
                         _this._settings.leftColumns = _this._settings.leftColumns.add(cell);
                     });
                 }
@@ -234,7 +234,7 @@
                     element.css("background-color", background);
             });
         },
-        _solverLeftColspan: function(row, action) {
+        _solveLeftColspan: function(row, action) {
             var fixColumn = this._settings.left;
             var inc = 1;
 
