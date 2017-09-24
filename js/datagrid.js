@@ -52,10 +52,10 @@
                 });
 
             this._settings.parent.scroll(function (e) {
-                var scrollWidth = parent[0].scrollWidth;
-                var clientWidth = parent[0].clientWidth;
-                var scrollHeight = parent[0].scrollHeight;
-                var clientHeight = parent[0].clientHeight;
+                var scrollWidth = _this._settings.parent[0].scrollWidth;
+                var clientWidth = _this._settings.parent[0].clientWidth;
+                var scrollHeight = _this._settings.parent[0].scrollHeight;
+                var clientHeight = _this._settings.parent[0].clientHeight;
                 var top = _this._settings.parent.scrollTop();
                 var left = _this._settings.parent.scrollLeft();
 
@@ -300,9 +300,7 @@
     }
 
     var dataGridPlugin = function (params) {
-        var args = Array.apply(null, arguments),
-            internal_return;
-		args.shift();
+        var internal_return;
         this.each(function () {
             var data = $(this).data('dataGrid');
             if(!data) {
@@ -312,7 +310,7 @@
             }
 
             if (typeof params === 'string' && typeof data[params] === 'function'){
-				internal_return = data[params].apply(data, args);
+				internal_return = data[params].call(data);
             }
             
             if (
