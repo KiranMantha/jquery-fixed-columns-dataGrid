@@ -310,13 +310,13 @@
             }
 
             if (typeof params === 'string' && typeof data[params] === 'function'){
-				internal_return = data[params].call(data);
+                if(params.split('_').length === 1)
+                    internal_return = data[params].call(data);
+                else 
+                    throw Error("'" + params +"' "+ "is a private function.");
             }
             
-            if (
-                internal_return === undefined ||
-                internal_return instanceof DataGrid
-            ) {
+            if (internal_return === undefined || internal_return instanceof DataGrid ) {
                 return this;
             } else {
                 return internal_return;
