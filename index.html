@@ -9,12 +9,23 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="js/datagrid.js"></script>
     <script src="js/script.js"></script>
+    <script src="scrollbar.js"></script>
+    <link rel="stylesheet" type="text/css" href="scrollbar.css"/>
     <title>Document</title>
     <style>        
         #example {
             width: 900px;
             max-width: 900px;
         }
+
+        div#tblContainer .table td, div#tblContainer .table th {
+            width: 100px;
+        }
+    </style>
+    <style>
+        .thead-fixed tbody {display: block;overflow: auto;}
+        .thead-fixed thead, 
+        .thead-fixed tbody tr {display: table;width: 100%;table-layout: fixed;}
     </style>
 </head>
 <body>
@@ -25,6 +36,7 @@
                 <table id="example" class="table table-striped table-hover">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="checkall" onchange="checkall(this)"/></th>
                                 <th>Ano</th>
                                 <th>Jan</th>
                                 <th>Fev</th>
@@ -36,6 +48,7 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td><input type="checkbox" class="checkall"/></td>
                                 <td>2010</td>
                                 <td>100.00</td>
                                 <td>100.00</td>
@@ -45,6 +58,7 @@
                                 <td>500.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2011</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -54,6 +68,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -63,6 +78,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -72,6 +88,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -81,6 +98,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -90,6 +108,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -99,6 +118,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -108,6 +128,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -117,6 +138,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -126,6 +148,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -135,6 +158,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -144,6 +168,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -153,6 +178,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
@@ -162,6 +188,7 @@
                                 <td>550.00</td>
                             </tr>
                             <tr>
+                                    <td><input type="checkbox" class="checkall"/></td>
                                 <td>2012</td>
                                 <td>110.00</td>
                                 <td>110.00</td>
