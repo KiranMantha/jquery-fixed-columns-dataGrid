@@ -239,7 +239,10 @@
                         bh = _this.settings.table.parent()[0].clientHeight;
                     _this.grid.cDiv.find('tr:first-child').css('height', hh - 1);
                     _this.grid.fbDiv.css({ 'top': hh, 'height': bh - 1 });
-                }, 500);
+                    _this.settings.table.find('tbody tr').each(function (i, row) {
+                        _this.grid.fbDiv.find('table tbody tr:nth-child(' + (i + 1) + ')').css('height', row.clientHeight)
+                    })
+                }, 5);
             },
             _setup: function () {
                 this.grid.sbDiv = this._wrapActuals();
