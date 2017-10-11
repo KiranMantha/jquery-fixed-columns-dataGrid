@@ -110,7 +110,7 @@
                     i += td.colSpan - 1;
     
                     if (i % columnCount === columnCount - 1) {
-                        var p = $(td.closest('tr')),
+                        var p = $($(td).closest('tr')),
                             row = $('<tr>');                    
                         var parentAttr = p.attr();
                         if (parentAttr) {
