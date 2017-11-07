@@ -10,8 +10,16 @@
     });
     $('#example').dataGrid('destroy');
     $('#example').dataGrid('refresh');
+    Context Menu Item Object Structure:
+    [{
+        'text': '',
+        'iconTemplate': '',
+        'action': function(selectedRows){}
+    }]
 */
 (function ($) {
+
+    $('head').append('<style type="text/css">tr.selected {background-color: #CCD1D9 !important;} .ctxMenu{display: none;padding: 0;margin: 0;list-style: none;position: absolute;border-radius: 4px;width: 150px;background-color: #fff;z-index: 100;}.ctxMenu li{padding: 5px 20px;border: 1px solid #CCD1D9;border-bottom: 0px;}.ctxMenu li:first-child{border-top-left-radius: 4px;border-top-right-radius: 4px;}.ctxMenu li:last-child{border-bottom: 1px solid #CCD1D9;border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;}</style>');
 
     var defaults = {
         head: true,
@@ -19,6 +27,8 @@
         left: 0,
         'z-index': 4,
         allowRowDrag: false,
+        multiRowSelect: false,
+        contextMenuItems: [],
         containerId: '',
         containerHeight: '50vh',
         containerWidth: '100vw'
@@ -38,7 +48,8 @@
             fbDiv: $(),
             fhDiv: $(),
             cDiv: $(),
-            headerHeight: 0
+            headerHeight: 0,
+            selectedRows: []
         }
 
         this.fixedColTable = this.fixedCornerTable = this.fixedCells = $();
@@ -49,8 +60,8 @@
         constructor: DataGrid,
         settings: {},
         _setDataChangeListener: function () {
-            if (this.settings.left > 0) {
-                var _this = this;
+            var _this = this;
+            if (this.settings.left > 0) {                
                 this.settings.table.find('tbody tr').each(function (i, row) {
                     $(row).on('dataChange', function () {
                         _this.grid.fbDiv.find('tr:nth-child(' + (i + 1) + ')').data($(this).data());
@@ -61,14 +72,144 @@
                         var dgrow = $(row).attr('data-dgrow');
                         _this.grid.fbDiv.find('tr[data-dgrow="' + dgrow + '"]').remove();
                     });
-                });
 
+                    if (_this.settings.multiRowSelect) {
+                        $(row).on('contextmenu', function (e) {
+                            if (_this.grid.selectedRows.length > 0) {
+                                e.preventDefault();
+                                _this._showCtxMenu(e);
+                            }
+                        });
+                    }
+                });
                 this.grid.fbDiv.find('tr').each(function (i, row) {
                     $(row).on('dataChange', function () {
                         _this.settings.table.find('tbody tr:nth-child(' + (i + 1) + ')').data($(this).data());
-                    })
+                    });
+
+                    if (_this.settings.multiRowSelect) {
+                        $(row).on('contextmenu', function (e) {
+                            if (_this.grid.selectedRows.length > 0) {
+                                e.preventDefault();
+                                _this._showCtxMenu(e);
+                            }
+                        });
+                    }
                 });
             }
+        },
+        _showCtxMenu: function (e) {
+            $('.ctxMenu').css({ left: e.pageX, top: e.pageY - 5 });
+            $('.ctxMenu').show();
+        },
+        _hideCtxMenu: function () {
+            $('.ctxMenu').hide();
+        },
+        _toggleRow: function (row) {
+            if ($(row).hasClass('selected')) {
+                $(row).removeClass('selected');                
+            } else {
+                $(row).addClass('selected');                
+            }
+        },
+        _clearAllRows: function () {
+            var _this = this;
+            $.each(this.grid.selectedRows, function (i, row) {
+                $(row).removeClass('selected');
+                if (_this.settings.left > 0) {
+                    var dgrow = $(row).attr('data-dgrow');
+                    _this.grid.fbDiv.find('tr[data-dgrow="' + dgrow + '"]').removeClass('selected');
+                    _this.settings.table.find('tr[data-dgrow="' + dgrow + '"]').removeClass('selected');
+                }
+            });
+            this.grid.selectedRows = [];
+            this._hideCtxMenu();
+        },
+        _copyRowData: function (newRow, isFixedBodyRow) {
+            var actualTblRows = this.settings.table.find('tbody tr');
+                fixedTblRows = this.grid.fbDiv.find('tr'),
+                _this = this;
+            if (!newRow) {
+                actualTblRows.each(function (i, row) {
+                    $(row).on('mousedown', function () {
+                        if (window.event.shiftKey) {
+                            _this._toggleRow(row);
+                            _this.grid.selectedRows.push(row);
+                            if (fixedTblRows.length > 0)
+                                _this._toggleRow($(fixedTblRows).eq(i));
+                        }
+                        if (window.event.button === 0) {
+                            if (!window.event.ctrlKey && !window.event.shiftKey) {
+                                _this._clearAllRows();
+                            }
+                        }
+                    });
+                });
+                fixedTblRows.each(function (i, row) {
+                    $(row).on('mousedown', function () {
+                        if (window.event.shiftKey) {
+                            _this._toggleRow(row);
+                            _this.grid.selectedRows.push($(actualTblRows).eq(i));
+                            _this._toggleRow($(actualTblRows).eq(i));
+                        }
+                        if (window.event.button === 0) {
+                            if (!window.event.ctrlKey && !window.event.shiftKey) {
+                                _this._clearAllRows();
+                            }
+                        }
+                    });
+                });
+            } else {
+                if (!isFixedBodyRow) {
+                    $(newRow).on('mousedown', function () {
+                        var dgrow = $(this).attr('data-dgrow');
+                        if (window.event.shiftKey) {
+                            _this._toggleRow(this);
+                            _this.grid.selectedRows.push(this);
+                            _this._toggleRow(_this.grid.fbDiv.find('tr[data-dgrow="' + dgrow + '"]'));
+                        }
+                        if (window.event.button === 0) {
+                            if (!window.event.ctrlKey && !window.event.shiftKey) {
+                                _this._clearAllRows();
+                            }
+                        }
+                    });
+                } else {
+                    $(newRow).on('mousedown', function () {
+                        var dgrow = $(this).attr('data-dgrow');
+                        if (window.event.shiftKey) {
+                            _this._toggleRow(this);
+                            var k = _this.settings.table.find('tr[data-dgrow="' + dgrow + '"]')
+                            _this.grid.selectedRows.push(k);
+                            _this._toggleRow(k);
+                        }
+                        if (window.event.button === 0) {
+                            if (!window.event.ctrlKey && !window.event.shiftKey) {
+                                _this._clearAllRows();
+                            }
+                        }
+                    });
+                }
+            }
+        },
+        _copyCellData: function () { },
+        _attachContextMenuToBody: function () {            
+            var ctxMenu = $('<ul>')
+                .addClass('ctxMenu'),
+                _this = this;
+            if (this.settings.contextMenuItems.length > 0) {
+                $.each(this.settings.contextMenuItems, function (i, item) {
+                    ctxMenu.append(
+                        $('<li>').append($('<a>').html(item['iconTemplate'] + item['text']).on('click', function () {
+                            if (typeof item['action'] === "function") {
+                                item['action'](_this.grid.selectedRows);
+                                _this._clearAllRows();
+                            }
+                        }))
+                    );
+                });
+            }            
+            $('body').append(ctxMenu);
         },
         _propagateInputChangesFromFixedTable: function () {
             var _this = this;
@@ -132,8 +273,9 @@
                         });
                     }
                     rows.push(row.append(cells).data(p.data()));
-                    p.attr('data-dgrow', rows.length);
-                    row.attr('data-dgrow', rows.length);
+                    var len = p[0].rowIndex;
+                    p.attr('data-dgrow', len);
+                    row.attr('data-dgrow', len);
                     if (rows.length > maxRows) {
                         break;
                     }
@@ -277,6 +419,10 @@
             this._setHeights();
             this._setDataChangeListener();
             this._propagateInputChangesFromFixedTable();
+            if (this.settings.multiRowSelect) {
+                this._copyRowData();
+                this._attachContextMenuToBody();
+            }
         },
         _reset: function () {
             this.grid.cDiv.remove();
@@ -294,13 +440,15 @@
                 if (actualTblRowCount > fixedTblRowCount) {
                     rows = this.settings.table.find('tbody tr:nth-child(' + fixedTblRowCount + ')').nextAll();
                     var bodycolumnSelector = this._columnBuilder(this.settings.left, 'td');
-                    rows.each(function (index, row) {
+                    rows.each(function (index, row) {                        
                         _this.grid.fbDiv.find('table > tbody').append(_this._cloneCells($(row).find(bodycolumnSelector),
                             _this.settings.left));
+                        _this._copyRowData(row);
+                        _this._copyRowData(_this.grid.fbDiv.find('table > tbody > tr:last-child'), true);
                     });
                 }
                 this._propagateInputChangesFromFixedTable();
-                this._setDataChangeListener();
+                this._setDataChangeListener();                
             }
         },
         destroy: function () {
