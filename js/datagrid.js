@@ -6,7 +6,7 @@
     $('#example').dataGrid({
         left: 2,
         head: true,
-        containerId: id-propibute-of-the-target-table-parent,
+        containerId: id-attribute-of-the-target-table-parent,
         containerHeight: in-px || in-vh || in-percentage,
         multiRowSelect: true,
         contextMenuItems: [{
