@@ -2,14 +2,32 @@
     The repo can be found at https://github.com/KiranMantha/jquery-fixed-columns-dataGrid
 
     example:
+    //Binding DataGrid
     $('#example').dataGrid({
         left: 2,
         head: true,
         containerId: id-propibute-of-the-target-table-parent,
-        containerHeight: in-px || in-vh || in-percentage
+        containerHeight: in-px || in-vh || in-percentage,
+        multiRowSelect: true,
+        contextMenuItems: [{
+            'text': '',
+            'iconTemplate': '',
+            'action': function(selectedRows){}
+        }]
     });
+
+    // Destroying DataGrid
     $('#example').dataGrid('destroy');
+
+    // Refresh DataGrid on adding new rows
     $('#example').dataGrid('refresh');
+
+    // Reload DataGrid headers on adding new columns
+    $('#example').dataGrid('reloadHeaders');
+
+    // Scroll to last row in DataGrid
+    $('#example').dataGrid('scrollToBottom');
+
     Context Menu Item Object Structure:
     [{
         'text': '',
