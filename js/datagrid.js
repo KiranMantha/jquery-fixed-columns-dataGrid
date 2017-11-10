@@ -10,9 +10,13 @@
         containerHeight: in-px || in-vh || in-percentage,
         multiRowSelect: true,
         contextMenuItems: [{
-            'text': '',
-            'iconTemplate': '',
-            'action': function(selectedRows){}
+            'text': 'Copy',
+            'iconTemplate': '<i class="fa fa-clone"></i>',
+            'action': function (selectedRows) { }
+        },{
+            'text': 'Paste',
+            'iconTemplate': '<i class="fa fa-clipboard"></i>',
+            'action': function (selectedRows) { }
         }]
     });
 
