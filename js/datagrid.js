@@ -38,6 +38,10 @@
         'iconTemplate': '',
         'action': function(selectedRows){}
     }]
+    http://jsfiddle.net/Brv6J/1972/
+    // Sortable Rows
+    http://jsfiddle.net/pmw57/tzYbU/205/
+    https://stackoverflow.com/questions/20668560/using-jquery-ui-sortable-to-sort-2-list-at-once
 */
 (function ($) {
     
@@ -45,11 +49,10 @@
     
         var defaults = {
             head: true,
-            foot: false,
             left: 0,
             'z-index': 4,
-            allowRowDrag: false,
             multiRowSelect: false,
+            sortableRows: false,
             contextMenuItems: [],
             containerId: '',
             containerHeight: '50vh',
@@ -119,6 +122,25 @@
                         }
                     });
                 }
+            },
+            _bindRowDragDrop: function(){
+                $( ".dgBody tbody" ).sortable({
+                    start: function(event, ui) { 
+                        currentIndex = ui.helper.index();
+                    },
+                    change: function( event, ui ) { 
+                        var indexCount = ui.item.parent().find('tr:not(.ui-sortable-helper)');
+                        var sortClass = '.'+ui.item.attr('class').split(' ')[0];
+                        var parent = $('.dgBody tbody').not(ui.item.parent());
+                        if(currentIndex > ui.placeholder.index()){
+                            parent.find('tr').eq(indexCount.index(ui.placeholder)).before(parent.find(sortClass));
+                        }
+                        else
+                            parent.find('tr').eq(indexCount.index(ui.placeholder)).after(parent.find(sortClass));
+                        currentIndex = ui.placeholder.index();
+                    }
+                });
+                $( ".dgBody tbody" ).disableSelection();
             },
             _showCtxMenu: function (e) {
                 $('.ctxMenu').css({ left: e.pageX, top: e.pageY - 5 });
@@ -313,7 +335,7 @@
                     'width': this.settings.containerWidth
                 });
                 this.settings.table.wrap(sbDiv);
-                this.grid.headerHeight = this.settings.table.find('thead')[0].clientHeight;
+                this.grid.headerHeight = this.settings.table.find('thead')[0].clientHeight;                
                 return this.settings.table.parent();
             },
             _setParent: function () {
@@ -377,7 +399,7 @@
                 }),
                     bodycolumnSelector = this._columnBuilder(this.settings.left, 'td');
     
-                var ftable = $('<table>').addClass($(this.settings.table)[this.useProp ? 'prop' : 'attr']('class')).addClass('dgfixedleft').css({
+                var ftable = $('<table>').addClass($(this.settings.table)[this.useProp ? 'prop' : 'attr']('class')).css({
                     'width': '1px',
                     'table-layout': 'fixed',
                     'background-color': '#fff',
@@ -445,12 +467,18 @@
                     this._bindMultiRowSelect();
                     this._attachContextMenuToBody();
                 }
+                if(this.settings.sortableRows) {
+                    this.settings.table.addClass('dgBody');
+                    this.grid.fbDiv.find('table').addClass('dgBody');
+                    this._bindRowDragDrop();
+                }
             },
             _reset: function () {
                 this.grid.cDiv.remove();
                 this.grid.fhDiv.remove();
                 this.grid.fbDiv.remove();
                 this.settings.table.unwrap();
+                this.settings.table.removeClass('dgBody');
                 this.settings.table.find('thead').show();
             },
             refresh: function () {

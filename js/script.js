@@ -22,6 +22,7 @@ function bindGrid() {
         left: 3,
         containerId: 'tblContainer',
         containerHeight: '500px',
-        containerWidth: '500px'
+        containerWidth: '500px',
+        sortableRows: true
     });
 }
