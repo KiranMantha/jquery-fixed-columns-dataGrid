@@ -500,6 +500,9 @@
                     this._propagateInputChangesFromFixedTable();
                     this._setDataChangeListener();                
                 }
+                if(this.settings.sortableRows) { 
+                    $(".dgBody tbody").sortable("refresh" );
+                }
             },
             reloadHeaders: function () {            
                 this.grid.cDiv.remove();
