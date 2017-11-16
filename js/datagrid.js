@@ -8,6 +8,7 @@
         head: true,
         containerId: id-attribute-of-the-target-table-parent,
         containerHeight: in-px || in-vh || in-percentage,
+        sortableRows: true,
         multiRowSelect: true,
         contextMenuItems: [{
             'text': 'Copy',
@@ -19,6 +20,8 @@
             'action': function (selectedRows) { }
         }]
     });
+
+    NOTE: To avail sortable rows functionality, include the latest jqueryUI.
 
     // Destroying DataGrid
     $('#example').dataGrid('destroy');
@@ -32,16 +35,17 @@
     // Scroll to last row in DataGrid
     $('#example').dataGrid('scrollToBottom');
 
+    //event to detect when a row is dropped
+    $('#example').on('stop.dg.row.drop', function(e){
+         //get the reference of dropped row using 'e.ui.item';
+    });
+
     Context Menu Item Object Structure:
     [{
         'text': '',
         'iconTemplate': '',
         'action': function(selectedRows){}
     }]
-    http://jsfiddle.net/Brv6J/1972/
-    // Sortable Rows
-    http://jsfiddle.net/pmw57/tzYbU/205/
-    https://stackoverflow.com/questions/20668560/using-jquery-ui-sortable-to-sort-2-list-at-once
 */
 (function ($) {
     
