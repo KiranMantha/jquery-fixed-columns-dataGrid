@@ -57,7 +57,8 @@
             containerId: '',
             containerHeight: '50vh',
             containerWidth: '100vw'
-        };
+        },
+            stopDgRowDropEvent = $.Event('stop.dg.row.drop');
     
         var DataGrid = function (element, params) {
             this.useProp = !!$.fn.prop;
@@ -140,6 +141,7 @@
     
             },
             _bindRowDragDrop: function () {
+                var _this = this;
                 $(".dgBody tbody").sortable({
                     start: function (event, ui) {
                         currentIndex = ui.helper.index();
@@ -154,9 +156,12 @@
                         else
                             parent.find('tr').eq(indexCount.index(ui.placeholder)).after(parent.find(sortClass));
                         currentIndex = ui.placeholder.index();
+                    },
+                    stop: function (event, ui) {
+                        stopDgRowDropEvent.ui = ui;
+                        _this.settings.table.trigger(stopDgRowDropEvent);
                     }
-                });
-                $(".dgBody tbody").disableSelection();
+                }).disableSelection();
             },
             _showCtxMenu: function (e) {
                 $('.ctxMenu').css({ left: e.pageX, top: e.pageY - 5 });
@@ -539,7 +544,8 @@
                 // destroy dataGrid
                 $(this.settings.parent).removeAttr('style');
                 this._reset();
-                this.settings.table.find('tbody tr').off('dataChange');
+                this.settings.table.find('tbody tr').off('dataChange').off(stopDgRowDropEvent);
+    
                 delete this.settings.table.data().dataGrid;
             },
             scrollToBottom: function () {
