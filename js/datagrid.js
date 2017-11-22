@@ -168,7 +168,7 @@
                         }
                     }).disableSelection();
                 } else {
-                    throw Error("JqueryUI not loaded. Please load latest version of JqueryUI.");
+                    throw Error("JqueryUI not loaded. Please load latest version of JqueryUI to implement sortable rows.");
                 }
             },
             _showCtxMenu: function (e) {
