@@ -206,8 +206,8 @@
                     actualTblRows.each(function (i, row) {
                         $(row).on('mousedown', function () {
                             if (window.event.shiftKey) {
-                                _this._toggleTag(row);
-                                _this.grid.selectedRows.push(row);
+                                _this._toggleTag(this);
+                                _this.grid.selectedRows.push(this);
                                 if (fixedTblRows.length > 0)
                                     _this._toggleTag($(fixedTblRows).eq(i));
                             }
@@ -221,7 +221,7 @@
                     fixedTblRows.each(function (i, row) {
                         $(row).on('mousedown', function () {
                             if (window.event.shiftKey) {
-                                _this._toggleTag(row);
+                                _this._toggleTag(this);
                                 _this.grid.selectedRows.push($(actualTblRows).eq(i));
                                 _this._toggleTag($(actualTblRows).eq(i));
                             }
@@ -294,11 +294,13 @@
     
                             switch (type) {
                                 case 'checkbox': {
-                                    _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') input')[_this.useProp ? 'prop' : 'attr']('checked', $(this)[_this.useProp ? 'prop' : 'attr']('checked'));
+                                    $(this).attr('checked', $(this).val());
+                                    _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') input').attr('checked', $(this).attr('checked'));
                                     break;
                                 }
                                 case 'text': {
-                                    _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') input').val($(this).val());
+                                    $(this).attr('value', $(this).val());
+                                    _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') input').val($(this).val()).attr('value', $(this).val());
                                     break;
                                 }
                             }
@@ -307,10 +309,10 @@
                         $(row).on('change', 'select', function (e) {
                             var colindex = $(e.currentTarget).closest('td').index() + 1,
                                 rowindex = $(e.currentTarget).closest('tr')[0].sectionRowIndex + 1,
-                                selectTag = _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') select');                        
+                                selectTag = _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') select');
                             selectTag.val($(this).val());
-                            selectTag.find('[value="' + $(this).val() + '"]')[this.useProp ? 'prop' : 'attr']('selected', true);
-                            $(this).find('[value="' + $(this).val() + '"]')[this.useProp ? 'prop' : 'attr']('selected', true);
+                            selectTag.find('[value="' + $(this).val() + '"]').attr('selected', true);
+                            $(this).find('[value="' + $(this).val() + '"]').attr('selected', true);
                         });
                     })
                 }
