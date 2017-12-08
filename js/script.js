@@ -23,6 +23,20 @@ function bindGrid() {
         containerId: 'tblContainer',
         containerHeight: '500px',
         containerWidth: '500px',
-        sortableRows: true
+        sortableRows: true,
+        multiRowSelect: true,
+        contextMenuItems: [{
+            'text': 'Copy',
+            'iconTemplate': '<i class="fa fa-clone"></i>',
+            'action': function (selectedRows) {
+                alert(JSON.stringify(selectedRows));
+            }
+        }, {
+            'text': 'Paste',
+            'iconTemplate': '<i class="fa fa-clipboard"></i>',
+            'action': function (selectedRows) {
+                alert(JSON.stringify(selectedRows));
+            }
+        }]
     });
 }
