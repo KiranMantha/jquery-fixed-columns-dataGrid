@@ -29,13 +29,15 @@ function bindGrid() {
             'text': 'Copy',
             'iconTemplate': '<i class="fa fa-clone"></i>',
             'action': function (selectedRows) {
-                alert(JSON.stringify(selectedRows));
+                console.log('selected rows\n');
+                console.log(selectedRows);
             }
         }, {
             'text': 'Paste',
             'iconTemplate': '<i class="fa fa-clipboard"></i>',
             'action': function (selectedRows) {
-                alert(JSON.stringify(selectedRows));
+                console.log('selected rows\n');
+                console.log(selectedRows);
             }
         }]
     });
