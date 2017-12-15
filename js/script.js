@@ -21,7 +21,7 @@ function bindGrid() {
     $('#example').dataGrid({
         left: 3,
         containerId: 'tblContainer',
-        containerHeight: '500px',
+        containerHeight: '450px',
         containerWidth: '500px',
         sortableRows: true,
         multiRowSelect: true,
