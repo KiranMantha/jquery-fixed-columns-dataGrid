@@ -128,7 +128,7 @@
                 if ($(this)[0].type != "checkbox") {
                     _this.settings.table.find('tbody tr:nth-child(' + (rowindx + 1) + ') td').eq(cellindx).find('input').attr('value', $(this).val()).val($(this).val());
                 } else {
-                    _this.settings.table.find('tbody tr:nth-child(' + (rowindx + 1) + ') td').eq(cellindx).find('input').attr('checked', $(this).val()).val($(this).val());
+                    _this.settings.table.find('tbody tr:nth-child(' + (rowindx + 1) + ') td').eq(cellindx).find('input').attr('checked', $(this).is(':checked')).val($(this).is(':checked'));
                 }
             });
 
@@ -294,7 +294,7 @@
 
                         switch (type) {
                             case 'checkbox': {
-                                $(this).attr('checked', $(this).val());
+                                $(this).attr('checked', $(this).is(':checked'));
                                 _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') input').attr('checked', $(this).attr('checked'));
                                 break;
                             }
@@ -557,6 +557,7 @@
             if (this.settings.left > 0) {
                 this.grid.fbDiv.css({ 'top': this.grid.fhDiv[0].clientHeight + 'px', 'height': this.settings.table.parent()[0].clientHeight - 1 });
             }
+            this.grid.fhDiv.scrollLeft(this.grid.sbDiv[0].scrollLeft);
         },
         destroy: function () {
             // destroy dataGrid
