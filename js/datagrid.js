@@ -45,7 +45,7 @@
 */
 (function ($) {
 
-    $('head').append('<style type="text/css">tr.selected, td.selected {background-color: #CCD1D9 !important;} .ctxMenu{display: none;padding: 0;margin: 0;list-style: none;position: absolute;border-radius: 4px;width: 150px;background-color: #fff;z-index: 100;}.ctxMenu li{padding: 5px 20px;border: 1px solid #CCD1D9;border-bottom: 0px;}.ctxMenu li:first-child{border-top-left-radius: 4px;border-top-right-radius: 4px;}.ctxMenu li:last-child{border-bottom: 1px solid #CCD1D9;border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;}</style>');
+    $('head').append('<style type="text/css">tr.selected, td.selected {background-color: #CCD1D9 !important;} .ctxMenu{display: none;padding: 0;margin: 0;list-style: none;position: absolute;border-radius: 4px;width: 150px;background-color: #fff;z-index: 100;}.ctxMenu li{padding: 5px 20px;border: 1px solid #CCD1D9;border-bottom: 0px;}.ctxMenu li:first-child{border-top-left-radius: 4px;border-top-right-radius: 4px;}.ctxMenu li:last-child{border-bottom: 1px solid #CCD1D9;border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;}.ctxMenu li > a{display:block;}</style>');
 
     var defaults = {
         head: true,
@@ -128,7 +128,7 @@
                 if ($(this)[0].type != "checkbox") {
                     _this.settings.table.find('tbody tr:nth-child(' + (rowindx + 1) + ') td').eq(cellindx).find('input').attr('value', $(this).val()).val($(this).val());
                 } else {
-                    _this.settings.table.find('tbody tr:nth-child(' + (rowindx + 1) + ') td').eq(cellindx).find('input').attr('checked', $(this).is(':checked')).val($(this).is(':checked'));
+                    _this.settings.table.find('tbody tr:nth-child(' + (rowindx + 1) + ') td').eq(cellindx).find('input')[0].checked = this.checked;//  .attr('checked', $(this).is(':checked')).val($(this).is(':checked'));
                 }
             });
 
@@ -294,8 +294,7 @@
 
                         switch (type) {
                             case 'checkbox': {
-                                $(this).attr('checked', $(this).is(':checked'));
-                                _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') input').attr('checked', $(this).attr('checked'));
+                                _this.settings.table.find('tbody tr:nth-child(' + rowindex + ') td:nth-child(' + colindex + ') input').prop('checked', $(this).prop('checked'));
                                 break;
                             }
                             case 'text': {
